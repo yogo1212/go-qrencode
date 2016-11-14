@@ -1,0 +1,27 @@
+package main
+
+import (
+	"fmt"
+	"os"
+
+	qrencode "github.com/yogo1212/go-qrencode"
+)
+
+func main() {
+	qr, err := qrencode.QRCodeEncodeString("hallo", 0, qrencode.QR_ECLEVEL_L, qrencode.QR_MODE_8, true)
+	if err != nil {
+		fmt.Fprint(os.Stderr, err)
+		return
+	}
+
+	for _, l := range qr.Lines {
+		for _, b := range l {
+			if b {
+				fmt.Print("##")
+			} else {
+				fmt.Print("  ")
+			}
+		}
+		fmt.Println()
+	}
+}

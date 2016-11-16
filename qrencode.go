@@ -23,45 +23,27 @@ type QRCode struct {
 	Lines [][]bool
 }
 
-type QRECLevel int
+type QRECLevel C.QRecLevel
 
 const (
-	QR_ECLEVEL_L QRECLevel = iota
-	QR_ECLEVEL_M           = iota
-	QR_ECLEVEL_Q           = iota
-	QR_ECLEVEL_H           = iota
+	QR_ECLEVEL_L QRECLevel = C.QR_ECLEVEL_L
+	QR_ECLEVEL_M           = C.QR_ECLEVEL_M
+	QR_ECLEVEL_Q           = C.QR_ECLEVEL_Q
+	QR_ECLEVEL_H           = C.QR_ECLEVEL_H
 )
 
-var qrECLevel = map[QRECLevel]C.QRecLevel {
-	QR_ECLEVEL_L: C.QR_ECLEVEL_L,
-	QR_ECLEVEL_M: C.QR_ECLEVEL_M,
-	QR_ECLEVEL_Q: C.QR_ECLEVEL_Q,
-	QR_ECLEVEL_H: C.QR_ECLEVEL_H,
-}
-
-type QRMode int
+type QRMode C.QRencodeMode
 
 const (
-  QR_MODE_NUM QRMode = iota
-  QR_MODE_AN         = iota
-  QR_MODE_8          = iota
-  QR_MODE_KANJI      = iota
-  QR_MODE_STRUCTURE  = iota
-  QR_MODE_ECI        = iota
-  QR_MODE_FNC1FIRST  = iota
-  QR_MODE_FNC1SECOND = iota
+  QR_MODE_NUM QRMode = C.QR_MODE_NUM
+  QR_MODE_AN         = C.QR_MODE_AN
+  QR_MODE_8          = C.QR_MODE_8
+  QR_MODE_KANJI      = C.QR_MODE_KANJI
+  QR_MODE_STRUCTURE  = C.QR_MODE_STRUCTURE
+  QR_MODE_ECI        = C.QR_MODE_ECI
+  QR_MODE_FNC1FIRST  = C.QR_MODE_FNC1FIRST
+  QR_MODE_FNC1SECOND = C.QR_MODE_FNC1SECOND
 )
-
-var qrMode = map[QRMode]C.QRencodeMode {
-	QR_MODE_NUM: C.QR_MODE_NUM,
-	QR_MODE_AN: C.QR_MODE_AN,
-	QR_MODE_8: C.QR_MODE_8,
-	QR_MODE_KANJI: C.QR_MODE_KANJI,
-	QR_MODE_STRUCTURE: C.QR_MODE_STRUCTURE,
-	QR_MODE_ECI: C.QR_MODE_ECI,
-	QR_MODE_FNC1FIRST: C.QR_MODE_FNC1FIRST,
-	QR_MODE_FNC1SECOND: C.QR_MODE_FNC1SECOND,
-}
 
 var qrCaseSensitive = map[bool]C.int {
 	false: 0,
@@ -87,7 +69,7 @@ func qrmeh(q *C.QRcode) (qr QRCode) {
 func QRCodeEncodeString(what string, version int, level QRECLevel, hint QRMode, caseSensitive bool) (qr QRCode, err error) {
 	s := C.CString(what)
 	defer C.free(s)
-	q := C.QRcode_encodeString(s, C.int(version), qrECLevel[level], qrMode[hint], qrCaseSensitive[caseSensitive])
+	q := C.QRcode_encodeString(s, C.int(version), C.QRecLevel(level), C.QRencodeMode(hint), qrCaseSensitive[caseSensitive])
 	if q == nil {
 		err = errors.New(C.GoString(C.strerrno()))
 		return
@@ -101,7 +83,7 @@ func QRCodeEncodeString(what string, version int, level QRECLevel, hint QRMode, 
 func QRCodeEncodeStringMQR(what string, version int, level QRECLevel, hint QRMode, caseSensitive bool) (qr QRCode, err error) {
 	s := C.CString(what)
 	defer C.free(s)
-	q := C.QRcode_encodeStringMQR(s, C.int(version), qrECLevel[level], qrMode[hint], qrCaseSensitive[caseSensitive])
+	q := C.QRcode_encodeStringMQR(s, C.int(version), C.QRecLevel(level), C.QRencodeMode(hint), qrCaseSensitive[caseSensitive])
 	if q == nil {
 		err = errors.New(C.GoString(C.strerrno()))
 		return

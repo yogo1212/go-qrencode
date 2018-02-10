@@ -16,6 +16,7 @@ import "C"
 
 import (
 	"errors"
+	"unsafe"
 )
 
 type QRCode struct {
@@ -54,7 +55,7 @@ func qrmeh(q *C.QRcode) (qr QRCode) {
 	qr.Version = int(q.version)
 	qr.Lines = make([][]bool, q.width)
 
-	b := C.GoBytes(q.data, q.width*q.width)
+	b := C.GoBytes(unsafe.Pointer(q.data), q.width*q.width)
 
 	for i, _ := range qr.Lines {
 		for _, x := range b[0:q.width] {
@@ -68,7 +69,7 @@ func qrmeh(q *C.QRcode) (qr QRCode) {
 
 func QRCodeEncodeString(what string, version int, level QRECLevel, hint QRMode, caseSensitive bool) (qr QRCode, err error) {
 	s := C.CString(what)
-	defer C.free(s)
+	defer C.free(unsafe.Pointer(s))
 	q := C.QRcode_encodeString(s, C.int(version), C.QRecLevel(level), C.QRencodeMode(hint), qrCaseSensitive[caseSensitive])
 	if q == nil {
 		err = errors.New(C.GoString(C.strerrno()))
@@ -82,7 +83,7 @@ func QRCodeEncodeString(what string, version int, level QRECLevel, hint QRMode, 
 
 func QRCodeEncodeStringMQR(what string, version int, level QRECLevel, hint QRMode, caseSensitive bool) (qr QRCode, err error) {
 	s := C.CString(what)
-	defer C.free(s)
+	defer C.free(unsafe.Pointer(s))
 	q := C.QRcode_encodeStringMQR(s, C.int(version), C.QRecLevel(level), C.QRencodeMode(hint), qrCaseSensitive[caseSensitive])
 	if q == nil {
 		err = errors.New(C.GoString(C.strerrno()))
